@@ -1,0 +1,138 @@
+#!/bin/bash
+
+INDEX="${INDEX-github_projects_items-obs_ux_infra_services-default}"
+
+# Script to set up mapping for elasticsearch
+set -eo pipefail
+
+# Remove existing index
+curl --request DELETE \
+  --url "$ELASTICSEARCH_URL/$INDEX" \
+  --header 'user-agent: vscode-restclient' \
+  --header "Authorization: ApiKey $ELASTICSEARCH_API_KEY"
+
+# Create the index and mappings
+curl --request PUT \
+  --url "$ELASTICSEARCH_URL/$INDEX" \
+  --header 'content-type: application/json' \
+  --header 'user-agent: vscode-restclient' \
+  --header "Authorization: ApiKey $ELASTICSEARCH_API_KEY" \
+  --data '{"mappings": {"properties": {"@timestamp": {"type": "date"},"Assignees": {"type": "keyword"},"Initiative": {"type": "keyword"},"Milestone": {"type": "text","fields": {"keyword": {"type": "keyword","ignore_above": 256}}},"Linked pull requests": {"type": "keyword"},"Labels": {"type": "text","fields": {"keyword": {"type": "keyword","ignore_above": 256}}},"Product area": {"type": "keyword"},"Repository": {"type": "keyword"},"Reviewers": {"type": "text"},"Status": {"type": "keyword"},"Title": {"type": "text"},"Tracked by": {"type": "keyword"},"Tracks": {"type": "keyword"},"URL": {"type": "keyword"}}}}'
+
+curl --request PUT \
+  --url "$ELASTICSEARCH_URL/_ingest/pipeline/github_projects_tsv" \
+  --header 'content-type: application/json' \
+  --header 'user-agent: vscode-restclient' \
+  --header "Authorization: ApiKey $ELASTICSEARCH_API_KEY" \
+  --data '
+{
+  "description": "Convert TSV exported from GItHub projects UI, to what the `gh project list` output format is instead. This is needed to import data from when we had to do this manually.",
+  "version": 1,
+  "processors": [
+    {
+      "rename": {
+        "field": "Assignees",
+        "target_field": "assignees",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Initiative",
+        "target_field": "initiative",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Labels",
+        "target_field": "labels",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Linked pull requests",
+        "target_field": "linked pull requests",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Milestone",
+        "target_field": "milestone",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Product area",
+        "target_field": "product area",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Repository",
+        "target_field": "repository",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Reviewers",
+        "target_field": "reviewers",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Status",
+        "target_field": "status",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Title",
+        "target_field": "title",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Tracked by",
+        "target_field": "tracked by",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "Tracks",
+        "target_field": "tracks",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "rename": {
+        "field": "URL",
+        "target_field": "content.url",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    }
+  ]
+}
+'

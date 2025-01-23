@@ -1,0 +1,11 @@
+#!/bin/bash
+PROJECT="${PROJECT:-1351}"
+
+set -eo pipefail
+
+# Archive all Status=Done items on a board
+gh project item-list "$PROJECT" \
+    --limit 5000 --owner elastic \
+    --format json --jq '.items | .[] | select(.status == "Done").id' |
+xargs -n 1 gh project item-archive "$PROJECT" --owner elastic --id
+

@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Run
-      run: echo "This step will always run"
+      run: ./bin/run_weekly

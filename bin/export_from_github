@@ -1,0 +1,3 @@
+#!/bin/bash
+PROJECT="${PROJECT:-1351}"
+gh project item-list "$PROJECT" --limit 50000 --owner elastic --format json

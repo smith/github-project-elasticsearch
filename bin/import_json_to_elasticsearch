@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Import an export from GitHub Projects into ES.
+
+set -eo pipefail
+
+INDEX="${INDEX-github_projects_items-obs_ux_infra_services-default}"
+URL="$ELASTICSEARCH_URL/$INDEX/_bulk"
+DATE="${DATE:-$(date -Iseconds)}"
+
+# Add a timestamp
+jq --compact-output --arg DATE "$DATE" '.items | .[] | . += { "@timestamp": $DATE }' | \
+# Add the index operation above each line
+awk -v i="$INDEX" \
+    '{ printf "{ \"create\": \{ \"_index\": \"%s\" \} \}\n%s\n", i, $0 }' | \
+# Post to _bulk API
+curl -H  "Content-Type: application/json; charset=UTF-8" -H "Authorization: ApiKey $ELASTICSEARCH_API_KEY " -XPOST "$URL" --data-binary @-
