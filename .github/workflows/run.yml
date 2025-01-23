@@ -13,5 +13,7 @@ jobs:
   run_weekly:
     runs-on: ubuntu-latest
     steps:
+    - name: Check out the repository to the runner
+      uses: actions/checkout@v4  
     - name: Run
       run: ./bin/run_weekly
