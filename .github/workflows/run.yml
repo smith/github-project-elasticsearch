@@ -12,7 +12,10 @@ on:
 jobs:
   run_weekly:
     runs-on: ubuntu-latest
+    environment: main
     env:
+      ELASTICSEARCH_URL: ${{ secrets.ELASTICSEARCH_URL }}
+      ELASTIC_API_KEY: ${{ secrets.ELASTIC_API_KEY }}
       GH_TOKEN: ${{ github.token }}
     steps:
     - name: Check out the repository to the runner
