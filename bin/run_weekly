@@ -3,7 +3,8 @@
 
 set -xeo pipefail
 
-DIR=$(dirname "$0")
+#DIR=$(dirname "$0")
 
-"$DIR"/export_from_github | "$DIR"/import_json_to_elasticsearch
+#"$DIR"/export_from_github | "$DIR"/import_json_to_elasticsearch
 #"$DIR"/archive_all_done
+gh auth status
