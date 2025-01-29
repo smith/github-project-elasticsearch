@@ -12,6 +12,6 @@ DATE="${DATE:-$(date -Iseconds)}"
 jq --compact-output --arg DATE "$DATE" '.items | .[] | . += { "@timestamp": $DATE }' | \
 # Add the index operation above each line
 awk -v i="$INDEX" \
-    '{ printf "{ \"create\": \{ \"_index\": \"%s\" \} \}\n%s\n", i, $0 }' | \
+    '{ printf "{ \"create\": { \"_index\": \"%s\" } }\n%s\n", i, $0 }' | \
 # Post to _bulk API
-curl -H  "Content-Type: application/json; charset=UTF-8" -H "Authorization: ApiKey $ELASTICSEARCH_API_KEY " -XPOST "$URL" --data-binary @-
+curl --silent -H "Content-Type: application/json; charset=UTF-8" -H "Authorization: ApiKey $ELASTICSEARCH_API_KEY " -XPOST "$URL" --data-binary @-

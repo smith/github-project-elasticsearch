@@ -3,7 +3,7 @@
 INDEX="${INDEX-github_projects_items-obs_ux_infra_services-default}"
 
 # Script to set up mapping for elasticsearch
-set -eo pipefail
+set -e
 
 # Remove existing index
 curl --request DELETE \

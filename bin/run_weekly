@@ -1,7 +1,7 @@
 #!/bin/bash
 # Run the weekly scripts to get data out of GitHub and into Elasticsearch
 
-set -xeo pipefail
+set -eo pipefail
 
 DIR=$(dirname "$0")
 
