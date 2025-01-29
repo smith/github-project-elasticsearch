@@ -14,4 +14,4 @@ jq --compact-output --arg DATE "$DATE" '.items | .[] | . += { "@timestamp": $DAT
 awk -v i="$INDEX" \
     '{ printf "{ \"create\": \{ \"_index\": \"%s\" \} \}\n%s\n", i, $0 }' | \
 # Post to _bulk API
-curl -H  "Content-Type: application/json; charset=UTF-8" -H "Authorization: ApiKey $ELASTICSEARCH_API_KEY " -XPOST "$URL" --data-binary @-
+curl --silent -H "Content-Type: application/json; charset=UTF-8" -H "Authorization: ApiKey $ELASTICSEARCH_API_KEY " -XPOST "$URL" --data-binary @-
